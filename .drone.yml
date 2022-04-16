@@ -1,0 +1,41 @@
+kind: pipeline
+type: docker
+name: default
+steps:
+    - name: discord start notification
+      image: appleboy/drone-discord
+      settings:
+          avatar_url: 'https://mdma.dev/data/assets/logo/512.png'
+          color: blue
+          username: qTechnologies CI
+          webhook_id:
+              from_secret: discord_webhook_id
+          webhook_token:
+              from_secret: discord_webhook_token
+          message: >              
+              {{repo.name}} build {{build.number}} has started.
+    - name: authenticate
+      image: robertstettner/drone-mvn-auth
+      volumes:
+          - name: cache
+            path: /root/.m2
+    - name: build
+      image: 'maven:3.8.4-jdk-8'
+      volumes:
+          - name: cache
+            path: /root/.m2
+      commands:
+          - export M2_HOME=/usr/share/maven
+          - mvn package -gs settings.xml
+    - name: discord-notify
+      image: brazildatacube/bdc-drone-discord
+      settings:
+          webhook:
+            from_secret: webhook_url
+      when:
+          status:
+              - failure
+              - success
+
+
+
