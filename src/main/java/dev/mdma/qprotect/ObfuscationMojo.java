@@ -29,12 +29,6 @@ public class ObfuscationMojo extends AbstractMojo {
     @Parameter(property = "obfuscation.configFile", required = true)
     private File configFile;
 
-    @Parameter(property = "obfuscation.inputFile", required = true)
-    private File inputFile;
-
-    @Parameter(property = "obfuscation.outputFile", required = true)
-    private File outputFile;
-
     @Parameter(property = "project", readonly = true, required = true)
     protected MavenProject mavenProject;
 
@@ -65,7 +59,7 @@ public class ObfuscationMojo extends AbstractMojo {
             Constructor<?> ctor = clazz.getConstructor();
             Object instance = ctor.newInstance();
 
-            clazz.getMethod("main", String[].class).invoke(instance, (Object) new String[]{configFile.getAbsolutePath(), "--input", inputFile.getAbsolutePath(), "--output", outputFile.getAbsolutePath()});
+            clazz.getMethod("main", String[].class).invoke(instance, (Object) new String[]{"--config", configFile.getAbsolutePath()});
         } catch (MalformedURLException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
             throw new MojoFailureException("An exception occurred while trying to invoke main method.", e);
         }
