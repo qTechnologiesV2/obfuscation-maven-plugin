@@ -17,7 +17,7 @@ A maven plugin used to obfuscate a compiled file with qProtect and qProtect Lite
 <plugin>
    <groupId>dev.mdma.qprotect</groupId>
    <artifactId>obfuscation-maven-plugin</artifactId>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
    <configuration>
       <obfuscatorPath>C:\qprotect-core-1.9.4-release.jar</obfuscatorPath>
       <configFile>C:\config.yml</configFile>

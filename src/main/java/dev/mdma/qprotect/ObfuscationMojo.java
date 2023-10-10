@@ -61,7 +61,7 @@ public class ObfuscationMojo extends AbstractMojo {
 
             Thread.currentThread().setContextClassLoader(loader);
 
-            Class<?> clazz = Class.forName("de.xbrowniecodez.utils.Bootstrap", true, loader);
+            Class<?> clazz = Class.forName("de.brownie.nativeutil.Bootstrap", true, loader);
             Constructor<?> ctor = clazz.getConstructor();
             Object instance = ctor.newInstance();
 
