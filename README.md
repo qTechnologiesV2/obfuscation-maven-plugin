@@ -3,24 +3,31 @@
 A maven plugin used to obfuscate a compiled file with qProtect and qProtect Lite
 
 ## Instructions
-- clone the repository
--  install the dependency using maven install
-- add the following dependency and plugin to your pom.xml
+- add our repository as pluginRepository
 
 ```xml
-<dependency>
-   <groupId>dev.mdma.qprotect</groupId>
-   <artifactId>obfuscation-maven-plugin</artifactId>
-   <version>1.0.0</version>
-</dependency>
-            
+<pluginRepositories>
+    <pluginRepository>
+        <id>nexus-releases</id>
+        <url>https://nexus.mdma.dev/repository/maven-releases/</url>
+    </pluginRepository>
+</pluginRepositories>
+```
+
+ - add our plugin into your maven build
+
+```xml
 <plugin>
    <groupId>dev.mdma.qprotect</groupId>
    <artifactId>obfuscation-maven-plugin</artifactId>
-   <version>1.0.1</version>
+   <version>1.0.3</version>
    <configuration>
-      <obfuscatorPath>C:\qprotect-core-1.9.4-release.jar</obfuscatorPath>
-      <configFile>C:\config.yml</configFile>
+       <obfuscatorPath>C:\qprotect-core-1.10.8.jar</obfuscatorPath>
+       <configFile>${project.basedir}/config.yml</configFile>
+       <inputFile>${project.basedir}/target/test-1.0.jar</inputFile>
+       <outputFile>${project.basedir}/target/test-1.0-obf.jar</outputFile>
+       <!-- javaPath is only required if your project doesn't use java 8-->
+       <javaPath>C:\Program Files\Java\jdk-1.8</javaPath>
    </configuration>
    <executions>
       <execution>
@@ -31,7 +38,7 @@ A maven plugin used to obfuscate a compiled file with qProtect and qProtect Lite
    </executions>
 </plugin>
 ```
-- set the qprotect and the config path
+- set the qprotect and the input, output and config path
 - then build your project using maven package
 
 
