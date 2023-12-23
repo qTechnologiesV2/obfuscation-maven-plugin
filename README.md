@@ -24,6 +24,7 @@ A maven plugin used to obfuscate a compiled file with qProtect and qProtect Lite
    <configuration>
        <obfuscatorPath>C:\qprotect-core-1.10.8.jar</obfuscatorPath>
        <configFile>${project.basedir}/config.yml</configFile>
+       <!-- inputFile and outputFile is optional, it can be set here or in the config -->
        <inputFile>${project.basedir}/target/test-1.0.jar</inputFile>
        <outputFile>${project.basedir}/target/test-1.0-obf.jar</outputFile>
        <!-- javaPath is only required if your project doesn't use java 8-->

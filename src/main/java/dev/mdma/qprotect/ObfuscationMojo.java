@@ -28,10 +28,10 @@ public class ObfuscationMojo extends AbstractMojo {
     @Parameter(property = "obfuscation.configFile", required = true)
     private File configFile;
 
-    @Parameter(property = "obfuscation.inputFile", required = true)
+    @Parameter(property = "obfuscation.inputFile")
     private File inputFile;
 
-    @Parameter(property = "obfuscation.outputFile", required = true)
+    @Parameter(property = "obfuscation.outputFile")
     private File outputFile;
 
     @Parameter(property = "obfuscation.javaPath")
@@ -85,12 +85,18 @@ public class ObfuscationMojo extends AbstractMojo {
                 "-jar",
                 obfuscatorPath.getAbsolutePath(),
                 "--config",
-                configFile.getAbsolutePath(),
-                "--input",
-                inputFile != null ? inputFile.getAbsolutePath() : "",
-                "--output",
-                outputFile != null ? outputFile.getAbsolutePath() : ""
+                configFile.getAbsolutePath()
         );
+
+        if (inputFile != null) {
+            processBuilder.command().add("--input");
+            processBuilder.command().add(inputFile.getAbsolutePath());
+        }
+
+        if (outputFile != null) {
+            processBuilder.command().add("--output");
+            processBuilder.command().add(outputFile.getAbsolutePath());
+        }
 
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
