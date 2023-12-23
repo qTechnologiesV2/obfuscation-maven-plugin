@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
-        <mavenVersion>3.8.6</mavenVersion>
+        <mavenVersion>3.9.6</mavenVersion>
         <pluginToolsVersion>3.10.2</pluginToolsVersion>
     </properties>
 
