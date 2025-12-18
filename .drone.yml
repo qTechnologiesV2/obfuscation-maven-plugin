@@ -2,40 +2,108 @@ kind: pipeline
 type: docker
 name: default
 steps:
-    - name: discord start notification
-      image: appleboy/drone-discord
-      settings:
-          avatar_url: 'https://mdma.dev/data/assets/logo/512.png'
-          color: blue
-          username: qTechnologies CI
-          webhook_id:
-              from_secret: discord_webhook_id
-          webhook_token:
-              from_secret: discord_webhook_token
-          message: >              
-              {{repo.name}} build {{build.number}} has started.
-    - name: authenticate
-      image: robertstettner/drone-mvn-auth
-      volumes:
-          - name: cache
-            path: /root/.m2
-    - name: build
-      image: 'maven:3.8.4-jdk-8'
-      volumes:
-          - name: cache
-            path: /root/.m2
-      commands:
-          - export M2_HOME=/usr/share/maven
-          - mvn package -gs settings.xml
-    - name: discord-notify
-      image: brazildatacube/bdc-drone-discord
-      settings:
-          webhook:
-            from_secret: webhook_url
-      when:
-          status:
-              - failure
-              - success
+  - name: send
+    image: plugins/webhook
+    settings:
+      urls:
+        from_secret: webhook_url
+      content_type: application/json
+      template: |
+        {
+          "content": null,
+          "embeds": [
+            {
+              "title": "Build #{{build.number}} has started on {{repo.name}}-{{build.branch}}",
+              "color": 23807,
+              "author": {
+                "name": "qTechnologies/qProtect"
+              },
+              "footer": {
+                "text": "qTechnologies CI",
+                "icon_url": "https://mdma.dev/data/assets/logo/Icon.png"
+              }
+            }
+          ],
+          "attachments": []
+        }
 
+  - name: authenticate
+    image: robertstettner/drone-mvn-auth
+    volumes:
+      - name: cache
+        path: /root/.m2
+    settings:
+      servers:
+        from_secret: nexus
+  - name: build
+    image: "maven:3.9.7-amazoncorretto-21"
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - export M2_HOME=/usr/share/maven
+      - mvn package -gs settings.xml
 
+  - name: sendSuccess
+    image: plugins/webhook
+    when:
+      status:
+        - success
+    settings:
+      urls:
+        from_secret: webhook_url
+      content_type: application/json
+      template: |
+        {
+          "content": null,
+          "embeds": [
+            {
+              "title": "Build #{{build.number}} successfully completed on {{repo.name}}-{{build.branch}}",
+              "color": 65280,
+              "author": {
+                "name": "qTechnologies/qProtect"
+              },
+              "footer": {
+                "text": "qTechnologies CI",
+                "icon_url": "https://mdma.dev/data/assets/logo/Icon.png"
+              }
+            }
+          ],
+          "attachments": []
+        }
 
+  - name: sendFail
+    image: plugins/webhook
+    when:
+      status:
+        - failure
+    settings:
+      urls:
+        from_secret: webhook_url
+      content_type: application/json
+      template: |
+        {
+          "content": null,
+          "embeds": [
+            {
+              "title": "Build #{{build.number}} has failed on {{repo.name}}-{{build.branch}}",
+              "color": 16711680,
+              "author": {
+                "name": "qTechnologies/qProtect"
+              },
+              "footer": {
+                "text": "qTechnologies CI",
+                "icon_url": "https://mdma.dev/data/assets/logo/Icon.png"
+              }
+            }
+          ],
+          "attachments": []
+        }
+  - name: publish
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_token
+      files: target/*.jar
+    when:
+      event: tag
