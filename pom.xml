@@ -7,16 +7,28 @@
     <groupId>dev.mdma.qprotect</groupId>
     <artifactId>obfuscation-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <url>https://mdma.dev</url>
-    <version>1.0.4</version>
+    <url>https://qtechnologies.dev</url>
+    <version>1.0.5</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
-        <mavenVersion>3.9.6</mavenVersion>
-        <pluginToolsVersion>3.10.2</pluginToolsVersion>
+        <!-- don't change maven version its last one supporting java 8 -->
+        <mavenVersion>4.0.0-alpha-12</mavenVersion>
+        <pluginToolsVersion>4.0.0-beta-2</pluginToolsVersion>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>mdma-releases</id>
+            <url>https://nexus.mdma.dev/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>mdma-snapshots</id>
+            <url>https://nexus.mdma.dev/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -36,6 +48,11 @@
             <artifactId>maven-plugin-annotations</artifactId>
             <version>${pluginToolsVersion}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
         </dependency>
     </dependencies>
 </project>

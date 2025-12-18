@@ -1,9 +1,14 @@
+# 🔐 Obfuscation Maven Plugin
 
-# obfuscation-maven-plugin
-A maven plugin used to obfuscate a compiled file with qProtect and qProtect Lite
+A Maven plugin for automating obfuscation using **qProtect** or **qProtect Lite**.
 
-## Instructions
-- add our repository as pluginRepository
+---
+
+## 📥 Installation
+
+### Add the Plugin Repository
+
+Add the following repository to your `pom.xml` so Maven can resolve the plugin:
 
 ```xml
 <pluginRepositories>
@@ -14,32 +19,113 @@ A maven plugin used to obfuscate a compiled file with qProtect and qProtect Lite
 </pluginRepositories>
 ```
 
- - add our plugin into your maven build
+---
+
+## 🛠️ Configuration
+
+Add the plugin to your Maven build configuration:
 
 ```xml
 <plugin>
-   <groupId>dev.mdma.qprotect</groupId>
-   <artifactId>obfuscation-maven-plugin</artifactId>
-   <version>1.0.3</version>
-   <configuration>
-       <obfuscatorPath>C:\qprotect-core-1.10.8.jar</obfuscatorPath>
-       <configFile>${project.basedir}/config.yml</configFile>
-       <!-- inputFile and outputFile is optional, it can be set here or in the config -->
-       <inputFile>${project.basedir}/target/test-1.0.jar</inputFile>
-       <outputFile>${project.basedir}/target/test-1.0-obf.jar</outputFile>
-       <!-- javaPath is only required if your project doesn't use java 8-->
-       <javaPath>C:\Program Files\Java\jdk-1.8</javaPath>
-   </configuration>
-   <executions>
-      <execution>
-         <goals>
-            <goal>obfuscate</goal>
-         </goals>
-      </execution>
-   </executions>
+    <groupId>dev.mdma.qprotect</groupId>
+    <artifactId>obfuscation-maven-plugin</artifactId>
+    <version>1.0.5</version>
+
+    <configuration>
+        <!-- Path to qProtect or qProtect Lite -->
+        <obfuscatorPath>C:\qprotect-core-1.10.8.jar</obfuscatorPath>
+
+        <!-- Path to qProtect configuration file -->
+        <configFile>${project.basedir}/config.yml</configFile>
+
+        <!-- Optional: can also be defined inside config.yml -->
+        <inputFile>${project.basedir}/target/test-1.0.jar</inputFile>
+        <outputFile>${project.basedir}/target/test-1.0-obf.jar</outputFile>
+
+        <!-- Optional: custom Java runtime for launching qProtect -->
+        <javaPath>C:\Program Files\Java\jdk-1.8</javaPath>
+    </configuration>
+
+    <executions>
+        <execution>
+            <goals>
+                <goal>obfuscate</goal>
+            </goals>
+        </execution>
+    </executions>
 </plugin>
 ```
-- set the qprotect and the input, output and config path
-- then build your project using maven package
 
+---
 
+## 🔗 qProtect Compatibility
+
+This plugin is compatible with the following qProtect versions:
+
+| Plugin Version | Compatible qProtect Versions |
+|----------------|------------------------------|
+| 1.0.5          | qProtect **1.x** and **2.x** |
+
+---
+
+## ☕ Java Version Compatibility
+
+The `javaPath` option exists to ensure compatibility with different **qProtect** versions:
+
+| qProtect Version | Required Java Version |
+| ---------------- | --------------------- |
+| qProtect 1.x     | Java 8                |
+| qProtect 2.x     | Java 21 or newer      |
+
+If your **project’s Java version differs** from the version required by qProtect, you **must** explicitly set `javaPath` so the plugin can launch qProtect with the correct Java runtime.
+
+### Examples
+
+**qProtect 1.x (Java 8):**
+
+```xml
+<javaPath>C:\Program Files\Java\jdk-1.8</javaPath>
+```
+
+**qProtect 2.x (Java 21+):**
+
+```xml
+<javaPath>C:\Program Files\Java\jdk-21</javaPath>
+```
+
+> 💡 If `javaPath` is not set, the plugin will use the Java version Maven is running with. This may cause qProtect to fail if the Java versions are incompatible.
+
+---
+
+## 📄 qProtect Configuration
+
+Ensure the following paths are correctly defined either in the plugin configuration **or** in your `config.yml` file:
+
+* ✅ qProtect JAR path
+* 📥 Input JAR path
+* 📤 Output JAR path
+* ⚙️ qProtect config
+
+> 💡 `inputFile` and `outputFile` are optional if already defined in `config.yml`.
+
+---
+
+## 🚀 Usage
+
+Build and obfuscate your project by running:
+
+```bash
+mvn package
+```
+
+The obfuscated JAR will be generated automatically in the configured output location.
+
+---
+
+## 🧩 Requirements
+
+* Maven 3.x
+* Java 6+ (project Java version)
+* Java 8 or Java 21+ available for qProtect (depending on version)
+
+---

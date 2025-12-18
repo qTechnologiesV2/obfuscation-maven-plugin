@@ -8,16 +8,20 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
+import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 @Mojo(name = "obfuscate",
         defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ObfuscationMojo extends AbstractMojo {
+    @Inject
+    private Logger logger;
 
     @Parameter(property = "obfuscation.skip", defaultValue = "false")
     private boolean isSkip;
@@ -43,29 +47,36 @@ public class ObfuscationMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException {
         if (isSkip) {
-            getLog().info("Skipping qProtect obfuscation because isSkip is set to 'true'");
+            logger.info("Skipping qProtect obfuscation because isSkip is set to 'true'");
             return;
         }
 
-        if (obfuscatorPath == null || !obfuscatorPath.exists()) {
-            throw new MojoExecutionException("qProtect Obfuscator Path is null or does not exist.");
+        if (obfuscatorPath == null) {
+            throw new MojoExecutionException("qProtect installation path is null");
+        }
+
+        if(!obfuscatorPath.exists()) {
+            throw new MojoExecutionException("qProtect installation not found at: " + obfuscatorPath.getAbsoluteFile());
         }
 
         if (configFile == null || !configFile.exists()) {
-            throw new MojoExecutionException("qProtect Obfuscator Config Path is null or does not exist.");
+            throw new MojoExecutionException("qProtect config path is null");
+        }
+
+        if( !configFile.exists()) {
+            throw new MojoExecutionException("qProtect config not found at: " + configFile.getAbsoluteFile());
         }
 
         if(Objects.nonNull(javaPath))
-            System.out.println("Using custom java path " + javaPath);
-
+            logger.info("Using custom java path: " + javaPath);
         try {
-            Process process = createProecess();
+            Process process = createProcess();
 
             // Capture the log
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    getLog().info(line);
+                    System.out.println(line);
                 }
             }
 
@@ -79,7 +90,7 @@ public class ObfuscationMojo extends AbstractMojo {
         }
     }
 
-    private Process createProecess() throws IOException {
+    private Process createProcess() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(
                 Objects.isNull(javaPath) ? "java" : javaPath + File.separator + "bin" + File.separator + "java",
                 "-jar",
@@ -99,7 +110,6 @@ public class ObfuscationMojo extends AbstractMojo {
         }
 
         processBuilder.redirectErrorStream(true);
-        Process process = processBuilder.start();
-        return process;
+        return processBuilder.start();
     }
 }
